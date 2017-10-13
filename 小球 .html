@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{
+            background-color:black;
+        }
+        canvas{
+            background: black;
+        }
+    </style>
+</head>
+<body>
+<canvas width="1600" height="800">这里面的文字，是给IE6、7、8看的。智能手机都支持canvas</canvas>
+
+<script>
+    //得到画布
+    var canvas = document.getElementsByTagName("canvas")[0];
+    //得到上下文
+    var ctx = canvas.getContext("2d");
+
+    var color = ["#FFCC00","#FF9900","#99CC33","#993366","#66CCCC","#FF99CC"];
+
+    //小球的构造函数
+    function Circle(x,y,r){
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.color=color[Math.floor(Math.random()*6)];
+        console.log(this.color)
+
+        //自己的变化方向
+        this.deltaX = Math.random() * 8 - 2;
+        this.deltaY = Math.random() * 8 - 4;
+        //自己把自己添加到数组中
+        window.actors.push(this);
+    }
+    //小球渲染方法
+    Circle.prototype.render = function(){
+        //如果自己没有了半径，就不渲染
+        if(this.r <= 0) {
+            return;
+        };
+
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.r,0,7,false);
+        ctx.closePath();
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+    //小球更新方法
+    Circle.prototype.update = function(){
+        //自己移动
+        this.x += this.deltaX;
+        this.y += this.deltaY;
+        //自己半径减小
+        this.r -= 0.2;
+    }
+
+
+
+    //一个数组，这个数组里面存放着动画中所有圆，这些对象都有update和render方法：
+    var actors = [];
+
+    //事件监听
+    canvas.onmousemove = function(event){
+        new Circle(event.offsetX,event.offsetY,20);
+    }
+
+    setInterval(function(){
+        //清除画布
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        //遍历数组，让数组中的每个对象都要update、render
+        actors.forEach(function(i){
+            i.update();
+            i.render();
+        }); 
+
+    },-1);
+</script>
+</body>
+</html>
